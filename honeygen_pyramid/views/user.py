@@ -1,6 +1,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
-from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 
 from honeygen_pyramid.resources.user import UserResourceItem, UserResourceCollection
@@ -8,21 +7,23 @@ from honeygen_pyramid.resources.user import UserResourceItem, UserResourceCollec
 __all__ = ['UserView', 'UsersView']
 
 
-@view_defaults(context=UserResourceItem)
+@view_defaults(context=UserResourceItem, renderer='json')
 class UserView(object):
     def __init__(self, context, request):
         self.request = request
+        self.context = context
 
-    @view_config()
-    def my_view(self):
-        return Response("<h1>Hello {}</h1>".format(self.request.remote_addr), content_type='text/html', status_int=200)
+    @view_config(permission='read')
+    def get(self):
+        return self.context
 
 
 @view_defaults(context=UserResourceCollection)
 class UsersView(object):
     def __init__(self, context, request):
         self.request = request
+        self.context = context
 
     @view_config()
-    def my_view(self):
-        return Response("<h1>Hello {}</h1>".format(self.request.remote_addr), content_type='text/html', status_int=200)
+    def get(self):
+        return 'Liste'
