@@ -3,7 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 
-from honeygen_pyramid.base_resource import UserResourceItem, UserResourceCollection
+from honeygen_pyramid.resources.user import UserResourceItem, UserResourceCollection
 
 __all__ = ['UserView', 'UsersView']
 

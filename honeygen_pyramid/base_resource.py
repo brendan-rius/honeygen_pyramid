@@ -1,5 +1,4 @@
 from __future__ import absolute_import, print_function, unicode_literals
-from honeygen_pyramid.models.user import UserModel
 
 
 class ResourceItem(object):
@@ -26,37 +25,24 @@ class ResourceItem(object):
         self.entity = self.model.get_by_id(id)
 
 
-class UserResourceItem(ResourceItem):
-    model = UserModel
-
-
-class UserResourceCollection(object):
-    entity_class = UserResourceItem
+class ResourceCollection(object):
+    item_class = None
 
     def __getitem__(self, item):
-        resource = self.entity_class(item)
+        resource = self.item_class(item)
         return resource
 
 
-class Root(object):
+class Root(dict):
     """
     The root used for traversal resource finding
     """
 
-    """
-    The children resources of this root. The name is reflected in the URL, thus the URL "/users" will call the child
-    "users"
-    """
-    children = {
-        'users': UserResourceCollection
-    }
-
-    def __init__(self, request):
+    def __init__(self, request, **kwargs):
+        super().__init__(**kwargs)
         self.request = request
+        self.add_children()
 
-    def __getitem__(self, item):
-        """
-        Called when trying to get the resource for an URL.
-        """
-        resource = self.children[item]()
-        return resource
+    def add_children(self):
+        from honeygen_pyramid.resources.user import UserResourceCollection
+        self['users'] = UserResourceCollection()
