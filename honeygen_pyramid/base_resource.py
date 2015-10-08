@@ -32,6 +32,8 @@ class ResourceCollection(object):
     item_resource = None
 
     def __getitem__(self, item):
+        if not hasattr(self.item_resource, '__call__'):
+            raise Exception('The ResourceCollection does not have a valid ResourceItem')
         resource = self.item_resource(item)
         return resource
 
