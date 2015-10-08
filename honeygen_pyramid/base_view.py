@@ -1,4 +1,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
+from pyramid.response import Response
 
 
 class BaseView(object):
@@ -8,22 +9,22 @@ class BaseView(object):
 
 
 class ItemView(BaseView):
-    def create(self):
-        return 'Liste'
-
     def read(self):
-        return 'Liste'
+        return Response('You try to read an item', content_type='text/plain', status=200)
 
     def update(self):
-        return 'Liste'
+        return Response('You try to update an item', content_type='text/plain', status=200)
 
     def delete(self):
-        return 'Liste'
+        return Response('You try to delete an item', content_type='text/plain', status=200)
 
 
 class CollectionView(BaseView):
-    def read(self):
-        return 'Liste'
+    def add(self):
+        return Response('You try to add an element to a collection', content_type='text/plain', status=200)
 
-    def update(self):
-        return 'Liste'
+    def list(self):
+        return Response('You try to list a collection', content_type='text/plain', status=200)
+
+    def empty(self):
+        return Response('You try to empty a collection', content_type='text/plain', status=200)

@@ -3,7 +3,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 from pyramid_sqlalchemy import metadata
 from sqlalchemy.ext.declarative import declarative_base
 
-from honeygen_pyramid.base_view import ItemView
+from honeygen_pyramid import all_models
+
+from honeygen_pyramid.base_view import ItemView, CollectionView
 
 
 class BaseModel(object):
@@ -21,7 +23,7 @@ class BaseModel(object):
         return 'hello'
 
     @classmethod
-    def resource(cls):
+    def resource_subtree(cls):
         from honeygen_pyramid.base_resource import ResourceItem, ResourceCollection
         """
         Return the resource subtree for a model.
@@ -42,19 +44,29 @@ class BaseModel(object):
             resource_collection = type(subclass_name, (ResourceCollection,), subclass_properties)
             return resource_collection
 
-        return resource_collection(cls, resource_item(cls))
+        resource_item = resource_item(cls)
+        resource_collection = resource_collection(cls, resource_item)
+        cls.resource_item, cls.resource_collection = resource_item, resource_collection
+        return resource_item, resource_collection
 
     @classmethod
-    def get_view(cls):
-        subclass_name = cls.__name__ + 'View'
-        subclass_properties = {
-            '__view_defaults__': {
-                'context': cls.resource_item(),
-                'renderer': 'json',
-            }
-        }
-        item_view = type(subclass_name, (ItemView,), subclass_properties)
-        return item_view
+    def get_views(cls):
+        resource_collection = all_models[cls]['resource_collection']
+        resource_item = all_models[cls]['resource_item']
+
+        def item_view():
+            subclass_name = cls.__name__ + 'View'
+            subclass_properties = {}
+            item_view = type(subclass_name, (ItemView,), subclass_properties)
+            return (resource_item, item_view)
+
+        def collection_view():
+            subclass_name = cls.__name__ + 'CollectionView'
+            subclass_properties = {}
+            collection_view = type(subclass_name, (CollectionView,), subclass_properties)
+            return (resource_collection, collection_view)
+
+        return item_view(), collection_view()
 
 
 BaseModel = declarative_base(cls=BaseModel, metadata=metadata)
