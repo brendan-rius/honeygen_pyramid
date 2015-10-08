@@ -7,8 +7,10 @@ from sqlalchemy import (
 )
 
 from honeygen_pyramid.base_model import BaseModel
+from honeygen_pyramid.exposed import exposed
 
 
+@exposed
 class User(BaseModel):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)

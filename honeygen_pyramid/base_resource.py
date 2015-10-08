@@ -1,4 +1,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
+from honeygen_pyramid.exposed import all_models
 
 __all__ = ['ResourceItem', 'ResourceCollection', 'Root']
 
@@ -41,11 +42,9 @@ class Root(dict):
     """
 
     def __init__(self, request, **kwargs):
-        from honeygen_pyramid import get_models
         super().__init__(**kwargs)
         self.request = request
-        models = get_models()
-        for model in models:
+        for model in all_models:
             name = model.__name__.lower() + 's'
             collection = model.resource()
             self.add_children(name, collection())
