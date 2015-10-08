@@ -1,5 +1,4 @@
 from pyramid.authorization import ACLAuthorizationPolicy
-
 from pyramid.config import Configurator
 
 from honeygen_pyramid.base_resource import Root
@@ -17,8 +16,3 @@ def main(global_config, **settings):
     config.add_request_method(get_user_jwt, name=str('user'), reify=True)
     config.scan()
     return config.make_wsgi_app()
-
-
-def get_models():
-    from honeygen_pyramid.src import User
-    return [User]
