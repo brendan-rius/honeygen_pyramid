@@ -1,5 +1,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
+__all__ = ['ResourceItem', 'ResourceCollection', 'Root']
+
 
 class ResourceItem(object):
     """
@@ -26,10 +28,10 @@ class ResourceItem(object):
 
 
 class ResourceCollection(object):
-    item_class = None
+    item_resource = None
 
     def __getitem__(self, item):
-        resource = self.item_class(item)
+        resource = self.item_resource(item)
         return resource
 
 
@@ -39,10 +41,14 @@ class Root(dict):
     """
 
     def __init__(self, request, **kwargs):
+        from honeygen_pyramid import get_models
         super().__init__(**kwargs)
         self.request = request
-        self.add_children()
+        models = get_models()
+        for model in models:
+            name = model.__name__.lower() + 's'
+            collection = model.resource()
+            self.add_children(name, collection())
 
-    def add_children(self):
-        from honeygen_pyramid.resources.user import UserResourceCollection
-        self['users'] = UserResourceCollection()
+    def add_children(self, name, resource):
+        self[name] = resource

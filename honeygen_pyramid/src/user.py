@@ -1,3 +1,5 @@
+from __future__ import absolute_import, print_function, unicode_literals
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -6,14 +8,8 @@ from sqlalchemy import (
 
 from honeygen_pyramid.base_model import BaseModel
 
-__all__ = ['NoSuchUserException', 'UserModel']
 
-
-class NoSuchUserException(Exception):
-    pass
-
-
-class UserModel(BaseModel):
+class User(BaseModel):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
