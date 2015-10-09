@@ -66,5 +66,5 @@ class Root(dict):
         and add them as children of this root resource
         """
         for model_class, model_info in all_models.items():
-            name = model_info['pluralized_name']  # If the model is "User", we want the URL to be "users"
+            name = model_info['url']  # If the model is "User", we want the URL to be "users"
             self[name] = model_info['resource_collection']()

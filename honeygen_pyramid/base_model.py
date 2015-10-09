@@ -38,6 +38,16 @@ class BaseModel(object):
             return name + 's'  # "word" -> "words"
 
     @classmethod
+    def hg_url(cls):
+        """
+        Return the URL identifier for the collection of the model.
+        For example is the model is User, we might want to have the URL
+        /people instead of /users. In this case, we can override this method.
+        :return: the URL identifier
+        """
+        return cls.hg_pluralized_name()
+
+    @classmethod
     def hg_get_by_id(cls, id):
         """
         This method get the entity represented by the class who has a certain identifier

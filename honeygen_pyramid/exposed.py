@@ -21,6 +21,7 @@ def exposed(cls):
         'resource_item': resource_item,
         'name': cls.hg_name(),
         'pluralized_name': cls.hg_pluralized_name(),
+        'url': cls.hg_url(),
         'item_view': item_view,
         'collection_view': collection_view,
     }
