@@ -44,7 +44,7 @@ class BaseModel(object):
         :param id: the identifier
         :return: the entity
         """
-        return 'hello'
+        return None  # TODO: implement
 
     @classmethod
     def hg_resource_subtree(cls):
