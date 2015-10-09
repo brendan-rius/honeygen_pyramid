@@ -2,6 +2,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from pyramid_sqlalchemy import metadata, Session
 from sqlalchemy.ext.declarative import declarative_base
+import inflect
 
 from honeygen_pyramid.base_view import ItemView, CollectionView
 from honeygen_pyramid.serializer import JSONAPISerializer
@@ -30,13 +31,9 @@ class BaseModel(object):
         Can be overridden
         :return: the pluralized name
         """
+        pluralizer = inflect.engine()
         name = cls.hg_name()
-        if name.endswith('s'):
-            return name + 'es'  # "address" -> "addresses"
-        elif name.endswith('y'):
-            return name[:-1] + 'ies'  # "availability" -> "availabilities"
-        else:
-            return name + 's'  # "word" -> "words"
+        return pluralizer.plural(name)
 
     @classmethod
     def hg_url(cls):
