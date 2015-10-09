@@ -21,7 +21,7 @@ def usage(argv):
 
 
 def main(argv=sys.argv):
-    from ..src import User
+    from ..src import User, Address
     if len(argv) < 2:
         usage(argv)
     config_uri = argv[1]
@@ -32,9 +32,18 @@ def main(argv=sys.argv):
     Session.configure(bind=engine)
     BaseModel.metadata.create_all(engine)
     with transaction.manager:
-        model = User(name='Brendan', age=18)
-        Session.add(model)
-        model = User(name='John', age=19)
-        Session.add(model)
-        model = User(name='Antoine', age=20)
-        Session.add(model)
+        brendan = User(name='Brendan', age=18)
+        Session.add(brendan)
+        Session.flush()
+
+        brendan_address = Address(city='Paris', owner_id=brendan.id)
+        Session.add(brendan_address)
+        Session.flush()
+
+        john = User(name='John', age=19, best_friend_id=brendan.id)
+        Session.add(john)
+        Session.flush()
+
+        antoine = User(name='Antoine', age=20)
+        Session.add(antoine)
+        Session.flush()

@@ -10,12 +10,14 @@ class Relationship(object):
      - a name (string)
      - a value
      - a flag that determines whether it is a *-to-one or *-to-many relationship
+     - a flag that determines whether it is an optional relationship ot not
     """
 
-    def __init__(self, name, to_many=False, optional=False):
+    def __init__(self, name, value, to_many=False, optional=False):
         self.name = name
         self.to_many = to_many
         self.optional = optional
+        self.value = value
 
 
 class Attribute(object):
@@ -58,7 +60,7 @@ class SQLAlchemyModel(Model):
 
     def __init__(self, sqlalchemy_entity):
         super().__init__(self.get_attributes(sqlalchemy_entity),
-                         self.get_relationships(sqlalchemy_entity.__class__))
+                         self.get_relationships(sqlalchemy_entity))
 
     @staticmethod
     def get_attributes(entity):
@@ -105,7 +107,7 @@ class SQLAlchemyModel(Model):
         return [extract_from_sql_alchemy(column) for column in get_sqlalchemy_attributes(entity.__class__)]
 
     @staticmethod
-    def get_relationships(model):
+    def get_relationships(entity):
         """
         Get all the visible relationships of a model.
         :return an array Relationship objects
@@ -114,14 +116,17 @@ class SQLAlchemyModel(Model):
         def get_sqlalchemy_relationships(model):
             return inspect(model).mapper.relationships.values()
 
-        def extract_relationship(relationship):
+        def extract_relationship(relationship, entity):
             """
             Extract information about an SQLAlchemy relationship
             :param relationship: the SQLAlchemy relationship
             :return a Relationship object
             """
             is_relationship_optional = all(col.nullable for col in relationship.local_columns)
-            return Relationship(name=relationship.key, to_many=relationship.uselist, optional=is_relationship_optional)
+            name = relationship.key
+            value = getattr(entity, name)
+            to_many = relationship.uselist
+            return Relationship(name=name, value=value, to_many=to_many, optional=is_relationship_optional)
 
-        relationships_attributes = get_sqlalchemy_relationships(model)
-        return [extract_relationship(rel) for rel in relationships_attributes]
+        relationships_attributes = get_sqlalchemy_relationships(entity.__class__)
+        return [extract_relationship(rel, entity) for rel in relationships_attributes]

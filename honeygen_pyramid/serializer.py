@@ -138,11 +138,19 @@ class Serializer(object):
 
     def serialize_attribute(self, attribute):
         """
-        Serialize an attribute as a string
+        Serialize an attribute
         :param attribute: the attribute
         :return: the serialized attribute
         """
-        return '{}'.format(attribute.value)
+        return attribute.value
+
+    def serialize_relationship(self, relationship):
+        """
+        Serialize a relationship
+        :param relationship: the relationship
+        :return: the serialized relationship
+        """
+        return relationship.value
 
 
 class JSONAPISerializer(Serializer):
@@ -161,4 +169,18 @@ class JSONAPISerializer(Serializer):
         return {attribute.name: self.serialize_attribute(attribute) for attribute in model.attributes}
 
     def _serialize_relationships(self, model):
-        return {}  # TODO: implement
+        return {relationship.name: self.serialize_relationship(relationship) for relationship in model.relationships}
+
+    def serialize_relationship(self, relationship):
+        def serialize_target_as_rio(target):
+            return {
+                'id': target.id
+            }
+
+        if relationship.to_many:
+            data = [serialize_target_as_rio(target) for target in relationship.value]
+        else:
+            data = serialize_target_as_rio(relationship.value)
+        return {
+            'data': data
+        }
