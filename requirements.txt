@@ -1,0 +1,9 @@
+pyramid==1.6a2
+SQLAlchemy==1.0.8
+pyramid_sqlalchemy==1.2.2
+pyramid_tm==0.12
+transaction==1.4.4
+inflect==0.2.4
+zope.sqlalchemy==0.7.6
+waitress==0.8.10
+PyJWT==1.4.0
