@@ -1,4 +1,8 @@
+import inflect
+
 from honeygen_pyramid.introspector import Attribute
+
+pluralizer = inflect.engine()
 
 
 class ComputedAttribute(Attribute):
@@ -156,7 +160,15 @@ class Serializer(object):
 class JSONAPISerializer(Serializer):
     def serialize(self, model):
         return {
+            'id': model.source.id,
+            'type': pluralizer.pluralize(model.name),
             'data': self._serialize_data(model),
+        }
+
+    def serialize_as_rio(self, model):
+        return {
+            'id': model.id,
+            'type': pluralizer.pluralize(model.name),
         }
 
     def _serialize_data(self, model):
@@ -172,15 +184,10 @@ class JSONAPISerializer(Serializer):
         return {relationship.name: self.serialize_relationship(relationship) for relationship in model.relationships}
 
     def serialize_relationship(self, relationship):
-        def serialize_target_as_rio(target):
-            return {
-                'id': target.id
-            }
-
         if relationship.to_many:
-            data = [serialize_target_as_rio(target) for target in relationship.value]
+            data = [self.serialize_as_rio(target) for target in relationship.value]
         else:
-            data = serialize_target_as_rio(relationship.value)
+            data = self.serialize_as_rio(relationship.value)
         return {
             'data': data
         }

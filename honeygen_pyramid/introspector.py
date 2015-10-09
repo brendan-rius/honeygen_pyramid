@@ -41,14 +41,18 @@ class Model(object):
      - a list of relationships
     """
 
-    def __init__(self, attributes, relationships):
+    def __init__(self, attributes, relationships, name, source):
         """
         Create a model from attributes and relationships
         :param attributes: a list of attributes
         :param relationships: a list of relationships
+        :param name: the name of the model
+        :param source: the entity from which the model was extracted
         """
         self.attributes = attributes
         self.relationships = relationships
+        self.source = source
+        self.name = name
 
 
 class SQLAlchemyModel(Model):
@@ -60,7 +64,9 @@ class SQLAlchemyModel(Model):
 
     def __init__(self, sqlalchemy_entity):
         super().__init__(self.get_attributes(sqlalchemy_entity),
-                         self.get_relationships(sqlalchemy_entity))
+                         self.get_relationships(sqlalchemy_entity),
+                         sqlalchemy_entity.hg_name(),
+                         sqlalchemy_entity)
 
     @staticmethod
     def get_attributes(entity):
@@ -124,7 +130,7 @@ class SQLAlchemyModel(Model):
             """
             is_relationship_optional = all(col.nullable for col in relationship.local_columns)
             name = relationship.key
-            value = getattr(entity, name)
+            value = SQLAlchemyModel(getattr(entity, name))
             to_many = relationship.uselist
             return Relationship(name=name, value=value, to_many=to_many, optional=is_relationship_optional)
 
