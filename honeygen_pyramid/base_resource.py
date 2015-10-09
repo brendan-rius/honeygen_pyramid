@@ -23,15 +23,28 @@ class ResourceItem(object):
 
         :param id: the identifier of the user in the collection
         """
-        self.entity = self.model.get_by_id(id)
+        self.entity = self.model.hg_get_by_id(id)
 
 
 class ResourceCollection(object):
+    """
+    Represents a collection as a Pyramid resource. Bound to URLs like "/users" or
+    "/users/5/friends"
+    """
+
+    """
+    The class of the resource that represents an item of the collection.
+    For example, if te collection is a collection of user, this will be the resource
+    that represents an user.
+    """
     item_resource = None
 
     def __getitem__(self, item):
-        if not hasattr(self.item_resource, '__call__'):
-            raise Exception('The ResourceCollection does not have a valid ResourceItem')
+        """
+        Get the resource for an item in the collection.
+        :param item: the identifier of the item in the collection
+        :return a ResourceItem instantiated with the identifier
+        """
         resource = self.item_resource(item)
         return resource
 
@@ -44,9 +57,14 @@ class Root(dict):
     def __init__(self, request, **kwargs):
         super().__init__(**kwargs)
         self.request = request
-        for model_class, model_info in all_models.items():
-            name = model_class.__name__.lower() + 's'
-            self.add_children(name, model_info['resource_collection']())
+        self.add_children()
 
-    def add_children(self, name, resource):
-        self[name] = resource
+    def add_children(self):
+        """
+        Add all the children to root.
+        Read all the available models from the global all_models, get the resource subtree,
+        and add them as children of this root resource
+        """
+        for model_class, model_info in all_models.items():
+            name = model_info['pluralized_name']  # If the model is "User", we want the URL to be "users"
+            self[name] = model_info['resource_collection']()

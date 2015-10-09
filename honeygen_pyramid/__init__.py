@@ -4,7 +4,7 @@ from pyramid.config import Configurator
 from honeygen_pyramid.base_resource import Root
 from honeygen_pyramid.exposed import all_models
 from honeygen_pyramid.jwt import get_user_jwt, JWTAuthenticationPolicy
-from .src import *
+from .src import *  # It is important that we import all the models
 
 
 def main(global_config, **settings):
@@ -15,13 +15,18 @@ def main(global_config, **settings):
     config.include('pyramid_sqlalchemy')
     config.add_request_method(get_user_jwt, name=str('user'), reify=True)
     _add_views(config)
-    config.scan()
     return config.make_wsgi_app()
 
 
 def _add_views(config):
-    for model in all_models:
-        (item_context, item_view), (collection_context, collection_view) = model.get_views()
+    """
+    We add all the views for the models to the Pyramid config.
+    It is important for this method to run that all the models have been properly imported.
+    :param config: the pyramid config to add the views to
+    """
+    for model_class, model_info in all_models.items():
+        (item_context, item_view) = model_info['item_view']
+        (collection_context, collection_view) = model_info['collection_view']
         config.add_view(item_view, context=item_context, request_method='GET', attr='read')
         config.add_view(item_view, context=item_context, request_method='PATCH', attr='update')
         config.add_view(item_view, context=item_context, request_method='DELETE', attr='delete')
