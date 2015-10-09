@@ -1,6 +1,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
-from pyramid_sqlalchemy import metadata
+from pyramid_sqlalchemy import metadata, Session
 from sqlalchemy.ext.declarative import declarative_base
 
 from honeygen_pyramid.base_view import ItemView, CollectionView
@@ -55,8 +55,7 @@ class BaseModel(object):
         :param id: the identifier
         :return: the entity
         """
-        from .src import User
-        return User(name='Brendan', age=18)  # TODO: change
+        return Session.query(cls).get(id)
 
     @classmethod
     def hg_resource_subtree(cls):

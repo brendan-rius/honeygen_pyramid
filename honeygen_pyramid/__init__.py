@@ -27,9 +27,10 @@ def _add_views(config):
     for model_class, model_info in all_models.items():
         (item_context, item_view) = model_info['item_view']
         (collection_context, collection_view) = model_info['collection_view']
-        config.add_view(item_view, context=item_context, request_method='GET', attr='read')
-        config.add_view(item_view, context=item_context, request_method='PATCH', attr='update')
-        config.add_view(item_view, context=item_context, request_method='DELETE', attr='delete')
-        config.add_view(collection_view, context=collection_context, request_method='POST', attr='add')
-        config.add_view(collection_view, context=collection_context, request_method='GET', attr='list')
-        config.add_view(collection_view, context=collection_context, request_method='DELETE', attr='empty')
+        config.add_view(item_view, context=item_context, request_method='GET', attr='read', renderer='json')
+        config.add_view(item_view, context=item_context, request_method='PATCH', attr='update', renderer='json')
+        config.add_view(item_view, context=item_context, request_method='DELETE', attr='delete', renderer='json')
+        config.add_view(collection_view, context=collection_context, request_method='POST', attr='add', renderer='json')
+        config.add_view(collection_view, context=collection_context, request_method='GET', attr='list', renderer='json')
+        config.add_view(collection_view, context=collection_context, request_method='DELETE', attr='empty',
+                        renderer='json')
