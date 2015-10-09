@@ -1,5 +1,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
+
 from pyramid.response import Response
+
+from honeygen_pyramid.introspector import SQLAlchemyModel
 
 
 class BaseView(object):
@@ -27,7 +30,10 @@ class ItemView(BaseView):
         Read an item from a collection; Typically occurs with requests like GET /users/1
         :return: the item
         """
-        return Response('You try to read an item', content_type='text/plain', status=200)
+        entity = SQLAlchemyModel(self.context.entity)
+        entity_class = self.context.model  # TODO: change
+        serializer = entity_class.hg_get_serializer()()
+        return serializer.serialize(entity)
 
     def update(self):
         """

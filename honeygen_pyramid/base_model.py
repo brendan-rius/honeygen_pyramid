@@ -4,6 +4,7 @@ from pyramid_sqlalchemy import metadata
 from sqlalchemy.ext.declarative import declarative_base
 
 from honeygen_pyramid.base_view import ItemView, CollectionView
+from honeygen_pyramid.serializer import JSONAPISerializer
 
 
 class BaseModel(object):
@@ -54,7 +55,8 @@ class BaseModel(object):
         :param id: the identifier
         :return: the entity
         """
-        return None  # TODO: implement
+        from .src import User
+        return User(name='Brendan', age=18)  # TODO: change
 
     @classmethod
     def hg_resource_subtree(cls):
@@ -105,6 +107,13 @@ class BaseModel(object):
             return resource_collection, collection_view
 
         return item_view(), collection_view()
+
+    @classmethod
+    def hg_get_serializer(cls):
+        subclass_name = cls.__name__ + 'JSONAPISerializer'
+        subclass_properties = {'hidden': []}
+        serializer = type(subclass_name, (JSONAPISerializer,), subclass_properties)
+        return serializer
 
 
 BaseModel = declarative_base(cls=BaseModel, metadata=metadata)
