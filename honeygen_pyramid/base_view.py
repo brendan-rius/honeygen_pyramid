@@ -79,4 +79,6 @@ class CollectionView(BaseView):
         """
         Empty the collection (delete all items)
         """
-        return Response('You try to empty a collection', content_type='text/plain', status=200)
+        entity_class = self.context.model
+        Session.query(entity_class).delete()
+        return Response(status=204)
