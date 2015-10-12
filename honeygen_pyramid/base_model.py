@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import inflect
 
 from honeygen_pyramid.base_view import ItemView, CollectionView
+from honeygen_pyramid.errors import NotFoundException
 from honeygen_pyramid.serializer import JSONAPISerializer
 
 
@@ -52,7 +53,10 @@ class BaseModel(object):
         :param id: the identifier
         :return: the entity
         """
-        return Session.query(cls).get(id)
+        entity = Session.query(cls).get(id)
+        if entity is None:
+            raise NotFoundException(cls, id)
+        return entity
 
     @classmethod
     def hg_resource_subtree(cls):

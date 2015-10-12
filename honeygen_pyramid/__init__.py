@@ -15,6 +15,7 @@ def main(global_config, **settings):
     config.include('pyramid_sqlalchemy')
     config.add_request_method(get_user_jwt, name=str('user'), reify=True)
     _add_views(config)
+    config.scan()
     return config.make_wsgi_app()
 
 
