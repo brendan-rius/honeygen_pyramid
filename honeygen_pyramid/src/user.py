@@ -22,4 +22,4 @@ class User(BaseModel):
     age = Column(Integer)
 
     best_friend_id = Column(Integer, ForeignKey('users.id'))
-    best_friend = relationship('User')
+    best_friend = relationship('User', uselist=False)

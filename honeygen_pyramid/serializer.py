@@ -161,7 +161,7 @@ class JSONAPISerializer(Serializer):
     def serialize(self, model):
         return {
             'id': model.source.id,
-            'type': pluralizer.pluralize(model.name),
+            'type': pluralizer.plural(model.name),
             'data': self._serialize_data(model),
         }
 
@@ -185,9 +185,15 @@ class JSONAPISerializer(Serializer):
 
     def serialize_relationship(self, relationship):
         if relationship.to_many:
-            data = [self.serialize_as_rio(target) for target in relationship.value]
+            data = [{
+                        'type': relationship.type,
+                        'id': target,
+                    } for target in relationship.value]
         else:
-            data = self.serialize_as_rio(relationship.value)
+            data = {
+                'type': relationship.type,
+                'id': relationship.value,
+            }
         return {
             'data': data
         }

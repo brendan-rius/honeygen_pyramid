@@ -1,6 +1,6 @@
 from sqlalchemy import inspect
 
-from sqlalchemy.orm import ColumnProperty
+from sqlalchemy.orm import ColumnProperty, load_only
 
 
 class Relationship(object):
@@ -8,29 +8,29 @@ class Relationship(object):
     Represent an entity's relationship.
     An entity has:
      - a name (string)
-     - a value
+     - the type of the target model
+     - the value (usually an ID or an array of IDs)
      - a flag that determines whether it is a *-to-one or *-to-many relationship
-     - a flag that determines whether it is an optional relationship ot not
     """
 
-    def __init__(self, name, value, to_many=False, optional=False):
+    def __init__(self, name, value, type, to_many=False):
         self.name = name
         self.to_many = to_many
-        self.optional = optional
         self.value = value
+        self.type = type
 
 
 class Attribute(object):
     """
     Represent the attribute of an entity.
-    An attribute has a name (string), a value, and a type (string)
+    An attribute has:
+     - a name (string)
+     - a value
     """
 
-    def __init__(self, name, value, type, optional=False):
+    def __init__(self, name, value):
         self.name = name
         self.value = value
-        self.type = type
-        self.optional = optional
 
 
 class Model(object):
@@ -103,12 +103,9 @@ class SQLAlchemyModel(Model):
             """
             Get information about an attribute extracted from an SQLAlchemy column
             """
-            if hasattr(column.type, 'impl'):
-                typename = column.type.impl.__class__.__name__
-            else:
-                typename = column.type.python_type.__name__
-
-            return Attribute(column.name, getattr(entity, column.name), typename, column.nullable)
+            name = column.name
+            value = getattr(entity, column.name)
+            return Attribute(name, value)
 
         return [extract_from_sql_alchemy(column) for column in get_sqlalchemy_attributes(entity.__class__)]
 
@@ -128,11 +125,17 @@ class SQLAlchemyModel(Model):
             :param relationship: the SQLAlchemy relationship
             :return a Relationship object
             """
-            is_relationship_optional = all(col.nullable for col in relationship.local_columns)
+
             name = relationship.key
-            value = SQLAlchemyModel(getattr(entity, name))
             to_many = relationship.uselist
-            return Relationship(name=name, value=value, to_many=to_many, optional=is_relationship_optional)
+            value = getattr(entity, name)
+            if to_many:
+                entities_only_ids = value.options(load_only('id')).all()
+                value = [entity_only_ids.id for entity_only_ids in entities_only_ids]
+            else:
+                value = value.id
+            type = relationship.mapper.class_.hg_name()
+            return Relationship(name=name, value=value, type=type, to_many=to_many)
 
         relationships_attributes = get_sqlalchemy_relationships(entity.__class__)
         return [extract_relationship(rel, entity) for rel in relationships_attributes]

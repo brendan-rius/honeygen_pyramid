@@ -1,6 +1,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
-from sqlalchemy import Column, Integer, Text, ForeignKey
 
+from sqlalchemy import Column, Integer, Text, ForeignKey
 from sqlalchemy.orm import backref, relationship
 
 from honeygen_pyramid.base_model import BaseModel
@@ -14,4 +14,4 @@ class Address(BaseModel):
     city = Column(Text, nullable=False)
 
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    owner = relationship('User', backref=backref('addresses'))
+    owner = relationship('User', backref=backref('addresses', lazy='dynamic'))
