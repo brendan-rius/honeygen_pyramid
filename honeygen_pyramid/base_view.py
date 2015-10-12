@@ -1,6 +1,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from pyramid.response import Response
+from pyramid_sqlalchemy import Session
 
 from honeygen_pyramid.introspector import SQLAlchemyModel
 
@@ -30,8 +31,8 @@ class ItemView(BaseView):
         Read an item from a collection; Typically occurs with requests like GET /users/1
         :return: the item
         """
-        entity = SQLAlchemyModel(self.context.entity)
-        entity_class = self.context.model  # TODO: change
+        entity = SQLAlchemyModel(self.context.entity)  # TODO: change
+        entity_class = self.context.model
         serializer = entity_class.hg_get_serializer()()
         return serializer.serialize(entity)
 
@@ -46,7 +47,9 @@ class ItemView(BaseView):
         """
         Delete an item from a collection; typically occurs with requests like DELETE /users/1
         """
-        return Response('You try to delete an item', content_type='text/plain', status=200)
+        Session.delete(self.context.entity)
+        Session.flush()
+        return Response(status=204)
 
 
 class CollectionView(BaseView):
