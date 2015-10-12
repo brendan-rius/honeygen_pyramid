@@ -128,13 +128,14 @@ class SQLAlchemyModel(Model):
 
             name = relationship.key
             to_many = relationship.uselist
-            value = getattr(entity, name)
-            if to_many:
-                entities_only_ids = value.options(load_only('id')).all()
-                value = [entity_only_ids.id for entity_only_ids in entities_only_ids]
-            else:
-                value = value.id
             type = relationship.mapper.class_.hg_name()
+            value = getattr(entity, name)
+            if value is not None:
+                if to_many:
+                    entities_only_ids = value.options(load_only('id')).all()
+                    value = [entity_only_ids.id for entity_only_ids in entities_only_ids]
+                else:
+                    value = value.id
             return Relationship(name=name, value=value, type=type, to_many=to_many)
 
         relationships_attributes = get_sqlalchemy_relationships(entity.__class__)

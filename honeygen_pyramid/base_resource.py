@@ -38,6 +38,13 @@ class ResourceCollection(object):
     that represents an user.
     """
     item_resource = None
+    """
+    The class of the model represented by the resource
+    """
+    model = None
+
+    def __init__(self):
+        self.list = self.model.hg_get_all()
 
     def __getitem__(self, item):
         """

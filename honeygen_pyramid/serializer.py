@@ -90,6 +90,9 @@ class Serializer(object):
         """
         return None  # TODO implement
 
+    def serialize_list(self, models):
+        return [self.serialize(model) for model in models]
+
     def get_attributes(self, model):
         """
         Get all the attributes to serialize which are:
@@ -163,6 +166,18 @@ class JSONAPISerializer(Serializer):
             'id': model.source.id,
             'type': pluralizer.plural(model.name),
             'data': self._serialize_data(model),
+        }
+
+    def serialize_list(self, models):
+        return {
+            'data': [self._serialize_in_list(model) for model in models]
+        }
+
+    def _serialize_in_list(self, model):
+        return {
+            'type': pluralizer.plural(model.name),
+            'id': model.source.id,
+            'attributes': self._serialize_attributes(model)
         }
 
     def serialize_as_rio(self, model):

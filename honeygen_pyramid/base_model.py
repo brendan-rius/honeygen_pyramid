@@ -59,6 +59,15 @@ class BaseModel(object):
         return entity
 
     @classmethod
+    def hg_get_all(cls):
+        """
+        This method get a list of all the entities of the class
+        :return: the list of entities
+        """
+        list = Session.query(cls).all()
+        return list
+
+    @classmethod
     def hg_resource_subtree(cls):
         from honeygen_pyramid.base_resource import ResourceItem, ResourceCollection
         """
@@ -76,7 +85,8 @@ class BaseModel(object):
 
         def resource_collection(cls, resource_item):
             subclass_name = cls.__name__ + 'ResourceCollection'
-            subclass_properties = {'item_resource': resource_item}
+            subclass_properties = {'item_resource': resource_item,
+                                   'model': cls}
             resource_collection = type(subclass_name, (ResourceCollection,), subclass_properties)
             return resource_collection
 

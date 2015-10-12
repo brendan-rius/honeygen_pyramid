@@ -31,7 +31,7 @@ class ItemView(BaseView):
         Read an item from a collection; Typically occurs with requests like GET /users/1
         :return: the item
         """
-        entity = SQLAlchemyModel(self.context.entity)  # TODO: change
+        entity = SQLAlchemyModel(self.context.entity)  # TODO: remove SQLAlchemy dependency here
         entity_class = self.context.model
         serializer = entity_class.hg_get_serializer()()
         return serializer.serialize(entity)
@@ -70,7 +70,10 @@ class CollectionView(BaseView):
         List items in the collection
         :return: a list of items
         """
-        return Response('You try to list a collection', content_type='text/plain', status=200)
+        entity_class = self.context.model
+        list = [SQLAlchemyModel(model) for model in self.context.list]  # TODO: remove SQLAlchemy dependency here
+        serializer = entity_class.hg_get_serializer()()
+        return serializer.serialize_list(list)
 
     def empty(self):
         """
