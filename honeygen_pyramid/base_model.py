@@ -1,4 +1,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
+from abc import abstractmethod
 
 from pyramid_sqlalchemy import metadata, Session
 from sqlalchemy.ext.declarative import declarative_base
@@ -67,6 +68,13 @@ class BaseModel(object):
         list = Session.query(cls).all()
         return list
 
+    def hg_save(self):
+        self.validate()
+        Session.flush()
+
+    def hg_delete(self):
+        Session.delete(self)
+
     @classmethod
     def hg_resource_subtree(cls):
         from honeygen_pyramid.base_resource import ResourceItem, ResourceCollection
@@ -124,6 +132,10 @@ class BaseModel(object):
         subclass_properties = {'hidden': []}
         serializer = type(subclass_name, (JSONAPISerializer,), subclass_properties)
         return serializer
+
+    @abstractmethod
+    def validate(self):
+        pass
 
 
 BaseModel = declarative_base(cls=BaseModel, metadata=metadata)
