@@ -7,3 +7,4 @@ inflect==0.2.4
 zope.sqlalchemy==0.7.6
 waitress==0.8.10
 PyJWT==1.4.0
+pytz==2015.6
