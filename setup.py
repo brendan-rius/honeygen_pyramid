@@ -17,7 +17,8 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'PyJWT',
-    'pytz'
+    'pytz',
+    'pytest'
 ]
 
 setup(name='honeygen_pyramid',

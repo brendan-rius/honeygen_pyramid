@@ -1,23 +1,13 @@
-from pyramid.authorization import ACLAuthorizationPolicy
-
-from pyramid.config import Configurator
-
 from honeygen_pyramid.base_resource import Root
 from honeygen_pyramid.exposed import all_models
 from honeygen_pyramid.jwt import get_user_jwt, JWTAuthenticationPolicy
-from .src import *  # It is important that we import all the models
+from honeygen_pyramid.src import *  # It is important that we import all the models
 
 
-def main(global_config, **settings):
-    config = Configurator(settings=settings,
-                          root_factory='.base_resource.Root',
-                          authentication_policy=JWTAuthenticationPolicy(),
-                          authorization_policy=ACLAuthorizationPolicy())
+def includeme(config):
     config.include('pyramid_sqlalchemy')
-    config.add_request_method(get_user_jwt, name=str('user'), reify=True)
     _add_views(config)
     config.scan()
-    return config.make_wsgi_app()
 
 
 def _add_views(config):

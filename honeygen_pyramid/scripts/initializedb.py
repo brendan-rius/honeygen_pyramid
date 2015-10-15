@@ -1,7 +1,7 @@
 import os
 import sys
-from sqlalchemy import engine_from_config
 
+from sqlalchemy import engine_from_config
 from pyramid_sqlalchemy import Session
 import transaction
 from pyramid.paster import (
@@ -21,7 +21,7 @@ def usage(argv):
 
 
 def main(argv=sys.argv):
-    from ..src import User, Address
+    from honeygen_pyramid.src import User, Address
     if len(argv) < 2:
         usage(argv)
     config_uri = argv[1]

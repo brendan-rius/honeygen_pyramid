@@ -13,6 +13,22 @@ class Serializer(object):
 
     @abstractmethod
     def serialize(self, model):
+        """
+        Take a full model and serializes it as a Python dictionary
+        :param model: a Model
+        :return: a dictionary representing the model
+        """
+        pass
+
+    @abstractmethod
+    def deserialize(self, obj, model_template):
+        """
+        Take a python dictionary serialized by this serializer and a model's template
+        and fills the model with the values contained in the python dictionary
+        :param obj: the dictionary
+        :param model_template: a Model (without values) to fill
+        :return: the same model, but filled with values from obj
+        """
         pass
 
     @abstractmethod
@@ -37,6 +53,27 @@ class Serializer(object):
 
 
 class JSONAPISerializer(Serializer):
+    def deserialize(self, obj, model_class):
+        """
+        This method receives a Python dictionary generated from a JSONAPI compliant json.
+        Example:
+        {
+            'data': {
+                'type': 'users',
+                'id': '1',
+                'attributes': {
+                    'name': 'John Doe',
+                    'age': '18'
+                    'birth': '1996-11-15T00:16:00+00.00'
+                }
+            }
+        }
+        :param obj: the dictionary
+        :param model_class: the template of the model to fill with the values contained in obj
+        :return: the filled model
+        """
+
+
     def serialize(self, model):
         return {
             'id': model.source.id,
