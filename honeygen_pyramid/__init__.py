@@ -1,7 +1,6 @@
 from honeygen_pyramid.base_resource import Root
 from honeygen_pyramid.exposed import all_models
 from honeygen_pyramid.jwt import get_user_jwt, JWTAuthenticationPolicy
-from honeygen_pyramid.src import *  # It is important that we import all the models
 
 
 def includeme(config):
