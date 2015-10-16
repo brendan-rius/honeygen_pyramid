@@ -109,6 +109,7 @@ class SQLAlchemyModel(Model):
 
         :return an array of Attribute
         """
+        has_value = not isclass(obj)
 
         def get_sqlalchemy_attributes(model):
             """
@@ -130,12 +131,12 @@ class SQLAlchemyModel(Model):
             Get information about an attribute extracted from an SQLAlchemy column.
             The value will only be extracted if the object is an instance (not a class)
             """
-            has_value = not isclass(obj)
             name = column.name
             value = getattr(obj, name) if has_value else None
             return Attribute(name, value, has_value=has_value)
 
-        return [extract_from_sql_alchemy(column) for column in get_sqlalchemy_attributes(obj.__class__)]
+        attributes = get_sqlalchemy_attributes(obj.__class__ if has_value else obj)
+        return [extract_from_sql_alchemy(column) for column in attributes]
 
     @staticmethod
     def get_relationships(obj):

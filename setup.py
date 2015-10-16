@@ -18,7 +18,8 @@ requires = [
     'waitress',
     'PyJWT',
     'pytz',
-    'pytest'
+    'pytest',
+    'WebTest',
 ]
 
 setup(name='honeygen_pyramid',

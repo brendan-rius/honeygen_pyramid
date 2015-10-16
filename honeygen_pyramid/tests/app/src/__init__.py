@@ -8,7 +8,7 @@ from honeygen_pyramid import JWTAuthenticationPolicy, get_user_jwt
 
 def main(global_config, **settings):
     config = Configurator(settings=settings,
-                          root_factory='.base_resource.Root',
+                          root_factory='honeygen_pyramid.base_resource.Root',
                           authentication_policy=JWTAuthenticationPolicy(),
                           authorization_policy=ACLAuthorizationPolicy())
     config.include('honeygen_pyramid')

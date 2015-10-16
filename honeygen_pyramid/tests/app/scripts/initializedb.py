@@ -21,7 +21,7 @@ def usage(argv):
 
 
 def main(argv=sys.argv):
-    from honeygen_pyramid.src import User, Address
+    from ..src.models import User, Address
     if len(argv) < 2:
         usage(argv)
     config_uri = argv[1]
